@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "airo",
+  "productName": "Airo",
   "version": "0.1.0",
-  "identifier": "com.pavel.airo",
+  "identifier": "com.toveal.airo",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "airo",
-        "width": 800,
-        "height": 600
+        "title": "Airo",
+        "width": 900,
+        "height": 700,
+        "minWidth": 560,
+        "minHeight": 480
       }
     ],
     "security": {
@@ -23,7 +25,9 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "nsis"
+    ],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
