@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+    <defs />
+    <g>
+        <!-- Primary shape: circle (diameter 64 -> r=32) centered at 32,32 -->
+        <circle cx="32" cy="32" r="32" fill="#0A84FF" />
+        <!-- Negative-space 'A' concept: white triangle cutout (intentional negative space) -->
+        <polygon points="32,8 12,56 52,56" fill="#FFFFFF" />
+        <!-- Accent: small blue square to hint at a 'screen' focal point (aligned to 4px grid) -->
+        <rect x="28" y="28" width="8" height="8" fill="#0A84FF" />
+    </g>
+</svg>
