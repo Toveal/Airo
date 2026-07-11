@@ -1,3 +1,4 @@
+mod config;
 mod logging;
 
 use tauri::Manager;
