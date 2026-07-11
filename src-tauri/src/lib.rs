@@ -1,5 +1,6 @@
 mod config;
 mod logging;
+mod sys_colors;
 
 use tauri::Manager;
 
