@@ -42,6 +42,7 @@ tracing-appender = "0.2"
 [dependencies.windows]
 version = "0.62.2"
 features = [
+    "Win32_Devices_Display",
     "Win32_Foundation",
     "Win32_Graphics_Gdi",
 ]
