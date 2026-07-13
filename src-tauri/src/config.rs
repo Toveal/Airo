@@ -10,6 +10,8 @@ use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
+use crate::locale::Language;
+
 pub const CONFIG_VERSION: u32 = 1;
 
 /// A colour without an alpha channel: `SetSysColors` has no notion of opacity.
@@ -111,6 +113,8 @@ pub struct AppConfig {
     pub apply_on_click: bool,
     /// Start minimized to the tray.
     pub start_hidden: bool,
+    /// Interface language; defaults to the Windows setting.
+    pub language: Language,
     /// Keyed by the stable monitor id from [`crate::monitors`].
     pub monitors: HashMap<String, MonitorProfile>,
 }
@@ -123,6 +127,7 @@ impl Default for AppConfig {
             saved_originals: None,
             apply_on_click: true,
             start_hidden: false,
+            language: Language::default(),
             monitors: HashMap::new(),
         }
     }

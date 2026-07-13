@@ -1,4 +1,5 @@
 mod config;
+mod locale;
 mod logging;
 mod monitors;
 mod sys_colors;
