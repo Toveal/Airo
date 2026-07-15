@@ -2,6 +2,7 @@ mod config;
 mod locale;
 mod logging;
 mod monitors;
+mod session;
 mod state;
 mod sys_colors;
 
