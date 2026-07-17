@@ -5,6 +5,7 @@ mod monitors;
 mod session;
 mod state;
 mod sys_colors;
+mod watcher;
 
 use tauri::Manager;
 
