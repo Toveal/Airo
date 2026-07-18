@@ -1,6 +1,7 @@
 //! Airo — changes the Windows selection colours depending on which monitor the
 //! cursor is on.
 
+mod commands;
 mod config;
 mod locale;
 mod logging;
@@ -60,6 +61,17 @@ pub(crate) fn request_exit(app: &AppHandle) {
 pub fn run() {
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_autostart::Builder::new().build())
+        .invoke_handler(tauri::generate_handler![
+            commands::get_overview,
+            commands::refresh_monitors,
+            commands::set_monitor_profile,
+            commands::reset_monitor_profile,
+            commands::set_preferences,
+            commands::apply_colors,
+            commands::restore_colors,
+            commands::get_autostart,
+            commands::set_autostart,
+        ])
         .setup(setup)
         .on_window_event(|window, event| {
             // The close button hides the window into the tray instead of
