@@ -390,7 +390,7 @@ mod tests {
             height: 1080,
             is_primary: index == 1,
             device_path: None,
-            handle: index as isize,
+            handle: 40 + index as isize,
         }
     }
 
@@ -416,6 +416,6 @@ mod tests {
 
         assert!(snapshot.by_id("abc").is_some());
         assert!(snapshot.by_id("nope").is_none());
-        assert!(snapshot.by_handle(HMONITOR(1 as *mut _)).is_some());
+        assert!(snapshot.by_handle(HMONITOR(41 as *mut _)).is_some());
     }
 }
