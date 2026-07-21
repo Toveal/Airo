@@ -3,42 +3,55 @@
     <TitleBar :is-dark="theme === 'dark'" @toggle-theme="toggleTheme" />
 
     <div class="app-body">
+      <nav class="views">
+        <button v-for="view in views" :key="view.id" class="view-tab"
+          :class="{ active: activeView === view.id }" @click="activeView = view.id">
+          {{ view.title }}
+        </button>
+      </nav>
+
       <!-- The monitor tabs live outside .content on purpose: anything inside
            that scroll area is pushed out of sight once the settings outgrow
            the window, and switching monitors has to stay reachable. -->
-      <div v-if="monitors.length > 1" class="subheader">
+      <div v-if="activeView === 'monitors' && monitors.length > 1" class="subheader">
         <MonitorTabs :monitors="monitors" :profiles="profiles" :active-id="activeId"
           :live-monitor-id="liveMonitorId" @select="activeId = $event" />
       </div>
 
       <div class="content">
-        <Transition name="slide-fade" mode="out-in">
-          <MonitorSettings v-if="activeMonitor && activeProfile" :key="activeId"
-            :monitor="activeMonitor" :profile="activeProfile"
-            @update:channel="(slot, ch, v) => setChannel(activeId, slot, ch, v)"
-            @update:color="(slot, rgb) => setColor(activeId, slot, rgb)"
-            @update:enabled="(v) => setEnabled(activeId, v)" />
+        <template v-if="activeView === 'monitors'">
+          <Transition name="slide-fade" mode="out-in">
+            <MonitorSettings v-if="activeMonitor && activeProfile" :key="activeId"
+              :monitor="activeMonitor" :profile="activeProfile"
+              @update:channel="(slot, ch, v) => setChannel(activeId, slot, ch, v)"
+              @update:color="(slot, rgb) => setColor(activeId, slot, rgb)"
+              @update:enabled="(v) => setEnabled(activeId, v)" />
 
-          <div v-else class="empty">
-            <p>No monitors found</p>
-            <button class="btn btn-secondary" @click="refreshMonitors">Refresh list</button>
-          </div>
-        </Transition>
+            <div v-else class="empty">
+              <p>No monitors found</p>
+              <button class="btn btn-secondary" @click="refreshMonitors">Refresh list</button>
+            </div>
+          </Transition>
+        </template>
+
+        <SettingsPanel v-else :preferences="preferences" :autostart="autostart"
+          @update:preferences="setPreferences" @update:autostart="setAutostart" />
       </div>
 
       <div class="actions">
         <span class="status" :class="saveState">{{ statusText }}</span>
 
         <div class="actions-right">
-          <button v-if="activeMonitor" class="btn btn-ghost" @click="resetMonitor(activeId)">
+          <button v-if="activeView === 'monitors' && activeMonitor" class="btn btn-ghost"
+            @click="resetMonitor(activeId)">
             Reset
           </button>
           <button class="btn btn-secondary" @click="restoreColors"
             title="Restore the colours that were in place before Airo started">
             System colors
           </button>
-          <button v-if="activeMonitor" class="btn btn-primary" @click="previewMonitor(activeId)"
-            title="Apply this monitor's colours right now">
+          <button v-if="activeView === 'monitors' && activeMonitor" class="btn btn-primary"
+            @click="previewMonitor(activeId)" title="Apply this monitor's colours right now">
             Apply now
           </button>
         </div>
@@ -48,10 +61,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import TitleBar from './components/TitleBar.vue';
 import MonitorTabs from './components/MonitorTabs.vue';
 import MonitorSettings from './components/MonitorSettings.vue';
+import SettingsPanel from './components/SettingsPanel.vue';
 import { useTheme } from './composables/useTheme.js';
 import { useAiro } from './composables/useAiro.js';
 
@@ -60,6 +74,8 @@ const { theme, toggleTheme } = useTheme();
 const {
   monitors,
   profiles,
+  preferences,
+  autostart,
   activeId,
   activeMonitor,
   activeProfile,
@@ -73,8 +89,16 @@ const {
   resetMonitor,
   previewMonitor,
   restoreColors,
+  setPreferences,
+  setAutostart,
   refreshMonitors,
 } = useAiro();
+
+const views = [
+  { id: 'monitors', title: 'Monitors' },
+  { id: 'settings', title: 'Settings' },
+];
+const activeView = ref('monitors');
 
 const statusText = computed(() => {
   switch (saveState.value) {
@@ -108,6 +132,37 @@ onMounted(init);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+.views {
+  display: flex;
+  gap: 2px;
+  padding: 14px 24px 0;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.view-tab {
+  padding: 8px 14px;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.view-tab:hover {
+  color: var(--text-secondary);
+}
+
+.view-tab.active {
+  color: var(--text-primary);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
 }
 
 .subheader {
@@ -218,6 +273,7 @@ onMounted(init);
 }
 
 @media (max-width: 560px) {
+  .views,
   .subheader,
   .content,
   .actions {
