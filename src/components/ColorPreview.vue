@@ -1,6 +1,6 @@
 <template>
   <div class="preview">
-    <div class="preview-label">What it will look like</div>
+    <div class="preview-label">{{ t('preview.title') }}</div>
 
     <!-- This shows the drag selection rectangle on purpose: in a modern
          Explorer it is the only thing that actually gets recoloured. Selected
@@ -29,25 +29,28 @@
     <div class="legend">
       <div class="legend-item">
         <span class="legend-swatch" :style="{ background: outlineCss }" />
-        <span class="legend-name">Outline</span>
+        <span class="legend-name">{{ t('preview.outline') }}</span>
         <span class="legend-value">{{ outlineHex }}</span>
       </div>
       <div class="legend-item">
         <span class="legend-swatch" :style="{ background: fillCss }" />
-        <span class="legend-name">Fill</span>
+        <span class="legend-name">{{ t('preview.fill') }}</span>
         <span class="legend-value">{{ fillHex }}</span>
       </div>
     </div>
 
-    <p class="note">
-      Windows chooses the fill opacity itself — it is only approximated here.
-    </p>
+    <p class="note">{{ t('preview.note') }}</p>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { toCss, toHex, toRgba } from '../lib/color.js';
+
+// tm() returns the raw message array and rt() resolves each entry — the
+// supported way of working with lists in vue-i18n.
+const { t, tm, rt } = useI18n();
 
 const props = defineProps({
   /** COLOR_HIGHLIGHT — the selection rectangle's outline. */
@@ -62,7 +65,7 @@ const FILL_ALPHA = 0.35;
 // Rectangle geometry in percent: the cursor drags it from the top left corner.
 const BAND = { left: 10, top: 16, width: 62, height: 56 };
 
-const files = ['report', 'budget', 'notes', 'diagram', 'contract', 'archive', 'photo', 'invoice'];
+const files = computed(() => tm('preview.files').map((file) => rt(file)));
 
 const outlineCss = computed(() => toCss(props.outline));
 const fillCss = computed(() => toCss(props.fill));

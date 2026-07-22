@@ -6,7 +6,7 @@
       <nav class="views">
         <button v-for="view in views" :key="view.id" class="view-tab"
           :class="{ active: activeView === view.id }" @click="activeView = view.id">
-          {{ view.title }}
+          {{ t(view.labelKey) }}
         </button>
       </nav>
 
@@ -28,8 +28,8 @@
               @update:enabled="(v) => setEnabled(activeId, v)" />
 
             <div v-else class="empty">
-              <p>No monitors found</p>
-              <button class="btn btn-secondary" @click="refreshMonitors">Refresh list</button>
+              <p>{{ t('monitors.empty') }}</p>
+              <button class="btn btn-secondary" @click="refreshMonitors">{{ t('actions.refresh') }}</button>
             </div>
           </Transition>
         </template>
@@ -44,15 +44,15 @@
         <div class="actions-right">
           <button v-if="activeView === 'monitors' && activeMonitor" class="btn btn-ghost"
             @click="resetMonitor(activeId)">
-            Reset
+            {{ t('actions.reset') }}
           </button>
           <button class="btn btn-secondary" @click="restoreColors"
-            title="Restore the colours that were in place before Airo started">
-            System colors
+            :title="t('actions.systemColorsHint')">
+            {{ t('actions.systemColors') }}
           </button>
           <button v-if="activeView === 'monitors' && activeMonitor" class="btn btn-primary"
-            @click="previewMonitor(activeId)" title="Apply this monitor's colours right now">
-            Apply now
+            @click="previewMonitor(activeId)" :title="t('actions.applyNowHint')">
+            {{ t('actions.applyNow') }}
           </button>
         </div>
       </div>
@@ -62,6 +62,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import TitleBar from './components/TitleBar.vue';
 import MonitorTabs from './components/MonitorTabs.vue';
 import MonitorSettings from './components/MonitorSettings.vue';
@@ -69,6 +70,7 @@ import SettingsPanel from './components/SettingsPanel.vue';
 import { useTheme } from './composables/useTheme.js';
 import { useAiro } from './composables/useAiro.js';
 
+const { t } = useI18n();
 const { theme, toggleTheme } = useTheme();
 
 const {
@@ -95,17 +97,17 @@ const {
 } = useAiro();
 
 const views = [
-  { id: 'monitors', title: 'Monitors' },
-  { id: 'settings', title: 'Settings' },
+  { id: 'monitors', labelKey: 'views.monitors' },
+  { id: 'settings', labelKey: 'views.settings' },
 ];
 const activeView = ref('monitors');
 
 const statusText = computed(() => {
   switch (saveState.value) {
     case 'saving':
-      return 'Saving…';
+      return t('status.saving');
     case 'saved':
-      return 'Saved';
+      return t('status.saved');
     case 'error':
       // The message comes from Rust as is — technical diagnostics.
       return lastError.value ?? '';

@@ -2,19 +2,23 @@
   <div class="monitor-tabs">
     <button v-for="monitor in monitors" :key="monitor.id" class="monitor-tab"
       :class="{ active: monitor.id === activeId, live: monitor.id === liveMonitorId }"
-      :title="`${monitor.label} — ${monitor.deviceName}`" @click="$emit('select', monitor.id)">
+      :title="t('monitors.tabTitle', { label: monitor.label, device: monitor.deviceName })"
+      @click="$emit('select', monitor.id)">
       <span class="tab-dot" :style="dotStyle(monitor.id)" />
       <span class="tab-name">{{ monitor.label }}</span>
-      <span v-if="monitor.isPrimary" class="tab-badge">main</span>
+      <span v-if="monitor.isPrimary" class="tab-badge">{{ t('monitors.primaryBadge') }}</span>
       <!-- The "cursor is here" dot makes it obvious which tab belongs to the
            monitor the user is currently working on. -->
-      <span v-if="monitor.id === liveMonitorId" class="tab-live" title="cursor is here" />
+      <span v-if="monitor.id === liveMonitorId" class="tab-live" :title="t('monitors.cursorHere')" />
     </button>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import { toCss } from '../lib/color.js';
+
+const { t } = useI18n();
 
 const props = defineProps({
   monitors: { type: Array, required: true },

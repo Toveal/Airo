@@ -11,11 +11,29 @@
         <span class="hint">{{ option.hint }}</span>
       </span>
     </label>
+
+    <div class="option option-select">
+      <span class="text">
+        <span class="title">{{ t('settings.language.title') }}</span>
+        <span class="hint">{{ t('settings.language.hint') }}</span>
+      </span>
+      <select class="select" :value="preferences.language"
+        @change="$emit('update:preferences', { language: $event.target.value })">
+        <option value="system">{{ t('settings.language.system') }}</option>
+        <option v-for="locale in LOCALES" :key="locale.code" :value="locale.code">
+          {{ locale.label }}
+        </option>
+      </select>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import { LOCALES } from '../i18n';
+
+const { t } = useI18n();
 
 const props = defineProps({
   preferences: { type: Object, required: true },
@@ -29,24 +47,22 @@ const patch = (key) => (value) => emit('update:preferences', { [key]: value });
 const options = computed(() => [
   {
     key: 'autostart',
-    title: 'Start with Windows',
-    hint: 'Airo starts minimized and begins tracking the cursor right away',
+    title: t('settings.autostart.title'),
+    hint: t('settings.autostart.hint'),
     value: props.autostart,
     onChange: (value) => emit('update:autostart', value),
   },
   {
     key: 'applyOnClick',
-    title: 'Change colour on click',
-    hint: 'The colour is applied on the first mouse click after you move to another '
-      + 'monitor. Turn this off to change it the moment the cursor crosses the boundary '
-      + '— more noticeable, but it forces every window to repaint on each crossing.',
+    title: t('settings.applyOnClick.title'),
+    hint: t('settings.applyOnClick.hint'),
     value: props.preferences.applyOnClick,
     onChange: patch('applyOnClick'),
   },
   {
     key: 'startHidden',
-    title: 'Start minimized to tray',
-    hint: 'The window is not shown on startup',
+    title: t('settings.startHidden.title'),
+    hint: t('settings.startHidden.hint'),
     value: props.preferences.startHidden,
     onChange: patch('startHidden'),
   },
@@ -127,5 +143,36 @@ const options = computed(() => [
   font-size: 11.5px;
   color: var(--text-tertiary);
   line-height: 1.4;
+}
+
+/* The dropdown row: label on the left, control on the right. */
+.option-select {
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  cursor: default;
+}
+
+.option-select:hover {
+  background: transparent;
+}
+
+.select {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.select:hover,
+.select:focus-visible {
+  border-color: var(--border-focus);
 }
 </style>

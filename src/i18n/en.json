@@ -1,0 +1,69 @@
+{
+  "titlebar": {
+    "themeToLight": "Light theme",
+    "themeToDark": "Dark theme",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "restore": "Restore",
+    "close": "Hide to tray"
+  },
+  "views": {
+    "monitors": "Monitors",
+    "settings": "Settings"
+  },
+  "status": {
+    "saving": "Saving…",
+    "saved": "Saved"
+  },
+  "actions": {
+    "reset": "Reset",
+    "systemColors": "System colors",
+    "systemColorsHint": "Restore the colors that were in place before Airo started",
+    "applyNow": "Apply now",
+    "applyNowHint": "Apply this monitor's colors right now",
+    "refresh": "Refresh list"
+  },
+  "monitors": {
+    "empty": "No monitors found",
+    "primaryBadge": "main",
+    "primary": "primary",
+    "cursorHere": "cursor is here",
+    "tabTitle": "{label} — {device}",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "enableHint": "Turn on colour switching for this monitor",
+    "disableHint": "Turn off — this monitor keeps the system colours"
+  },
+  "colors": {
+    "outline": "Selection outline",
+    "outlineHint": "COLOR_HIGHLIGHT — the line around the rectangle you drag with the mouse",
+    "fill": "Selection fill",
+    "fillHint": "COLOR_HOTLIGHT — the translucent fill inside that rectangle"
+  },
+  "preview": {
+    "title": "What it will look like",
+    "outline": "Outline",
+    "fill": "Fill",
+    "note": "Windows chooses the fill opacity itself — it is only approximated here.",
+    "files": ["report", "budget", "notes", "diagram", "contract", "archive", "photo", "invoice"]
+  },
+  "settings": {
+    "autostart": {
+      "title": "Start with Windows",
+      "hint": "Airo starts minimized and begins tracking the cursor right away"
+    },
+    "applyOnClick": {
+      "title": "Change colour on click",
+      "hint": "The colour is applied on the first mouse click after you move to another monitor. Turn this off to change it the moment the cursor crosses the boundary — more noticeable, but it forces every window to repaint on each crossing."
+    },
+    "startHidden": {
+      "title": "Start minimized to tray",
+      "hint": "The window is not shown on startup"
+    },
+    "language": {
+      "title": "Interface language",
+      "hint": "Applies to the window and the tray menu",
+      "system": "System"
+    }
+  }
+}

@@ -7,6 +7,14 @@ const host = process.env.TAURI_DEV_HOST;
 export default defineConfig(async () => ({
   plugins: [vue()],
 
+  // Strip the unused parts of vue-i18n: strings are only read through
+  // useI18n() (Composition API), so the legacy mode and prod devtools can go.
+  define: {
+    __VUE_I18N_FULL_INSTALL__: "false",
+    __VUE_I18N_LEGACY_API__: "false",
+    __INTLIFY_PROD_DEVTOOLS__: "false",
+  },
+
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent Vite from obscuring rust errors

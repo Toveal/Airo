@@ -9,8 +9,10 @@ use serde::{Deserialize, Serialize};
 use tauri::State;
 
 use crate::config::{AppConfig, ColorPair, MonitorProfile};
+use crate::locale::{Language, Locale};
 use crate::monitors::MonitorInfo;
 use crate::state::AppState;
+use crate::tray;
 
 type Shared<'a> = State<'a, Arc<AppState>>;
 
@@ -20,6 +22,7 @@ type Shared<'a> = State<'a, Arc<AppState>>;
 pub struct Preferences {
     pub apply_on_click: bool,
     pub start_hidden: bool,
+    pub language: Language,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -28,6 +31,8 @@ pub struct Overview {
     pub monitors: Vec<MonitorInfo>,
     pub profiles: std::collections::HashMap<String, MonitorProfile>,
     pub preferences: Preferences,
+    /// The language to render the UI in: `system` is already resolved here.
+    pub resolved_language: Locale,
     pub originals: ColorPair,
     pub applied: Option<ColorPair>,
 }
@@ -36,6 +41,7 @@ fn preferences_of(config: &AppConfig) -> Preferences {
     Preferences {
         apply_on_click: config.apply_on_click,
         start_hidden: config.start_hidden,
+        language: config.language,
     }
 }
 
@@ -49,6 +55,7 @@ pub fn get_overview(state: Shared<'_>) -> Overview {
         monitors,
         profiles: config.monitors.clone(),
         preferences: preferences_of(&config),
+        resolved_language: config.language.resolve(),
         originals: state.colors.originals(),
         applied: state.colors.applied(),
     }
@@ -95,12 +102,28 @@ pub fn reset_monitor_profile(
     Ok(profile)
 }
 
+/// Saves the settings and returns the language the UI should render in.
+///
+/// The resolved language is returned on purpose: with `system` the frontend
+/// would have no way of knowing what it turned into.
 #[tauri::command]
-pub fn set_preferences(state: Shared<'_>, preferences: Preferences) {
+pub fn set_preferences(
+    app: tauri::AppHandle,
+    state: Shared<'_>,
+    preferences: Preferences,
+) -> Locale {
+    let locale = preferences.language.resolve();
+
     state.update_config(|config| {
         config.apply_on_click = preferences.apply_on_click;
         config.start_hidden = preferences.start_hidden;
+        config.language = preferences.language;
     });
+
+    // Rust draws the tray menu, so without this it would stay in the old
+    // language.
+    tray::relocalize(&app, locale);
+    locale
 }
 
 /// Sets a colour pair right away — for the "apply" button and live preview.

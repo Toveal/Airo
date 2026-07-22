@@ -12,7 +12,7 @@
     <div class="titlebar-right">
       <!-- Theme toggle -->
       <button class="titlebar-btn theme-toggle" @click="$emit('toggle-theme')"
-        :title="isDark ? 'Light theme' : 'Dark theme'">
+        :title="isDark ? t('titlebar.themeToLight') : t('titlebar.themeToDark')">
         <svg v-if="isDark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5" />
@@ -26,14 +26,14 @@
       </button>
 
       <!-- Minimize -->
-      <button class="titlebar-btn" @click="minimizeWindow" title="Minimize">
+      <button class="titlebar-btn" @click="minimizeWindow" :title="t('titlebar.minimize')">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <rect x="1" y="5.5" width="10" height="1" fill="currentColor" />
         </svg>
       </button>
 
       <!-- Maximize / Restore -->
-      <button class="titlebar-btn" @click="toggleMaximize" :title="isMaximized ? 'Restore' : 'Maximize'">
+      <button class="titlebar-btn" @click="toggleMaximize" :title="isMaximized ? t('titlebar.restore') : t('titlebar.maximize')">
         <svg v-if="!isMaximized" width="12" height="12" viewBox="0 0 12 12">
           <rect x="1.5" y="1.5" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.2" />
         </svg>
@@ -45,7 +45,7 @@
       </button>
 
       <!-- Close -->
-      <button class="titlebar-btn close-btn" @click="closeWindow" title="Close">
+      <button class="titlebar-btn close-btn" @click="closeWindow" :title="t('titlebar.close')">
         <svg width="12" height="12" viewBox="0 0 12 12">
           <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
         </svg>
@@ -56,6 +56,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 defineProps({
   isDark: Boolean,

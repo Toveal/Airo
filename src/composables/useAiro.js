@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
+import { setLocale } from '../i18n';
 
 /**
  * The single source of truth for monitors and profiles.
@@ -15,6 +16,7 @@ const profiles = ref({});
 const preferences = ref({
   applyOnClick: true,
   startHidden: false,
+  language: 'system',
 });
 const autostart = ref(false);
 const activeId = ref(null);
@@ -55,6 +57,8 @@ async function loadOverview() {
   monitors.value = overview.monitors;
   profiles.value = overview.profiles;
   preferences.value = overview.preferences;
+  // Rust resolves `system` — it is the side that knows the Windows language.
+  setLocale(overview.resolvedLanguage);
 
   // The active tab may have pointed at a monitor that is now disconnected.
   if (!monitors.value.some((m) => m.id === activeId.value)) {
@@ -134,7 +138,8 @@ export function useAiro() {
 
   const setPreferences = async (patch) => {
     preferences.value = { ...preferences.value, ...patch };
-    await call('set_preferences', { preferences: preferences.value });
+    const resolved = await call('set_preferences', { preferences: preferences.value });
+    setLocale(resolved);
     flashSaved();
   };
 

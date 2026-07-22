@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use tauri::menu::{Menu, MenuItem};
-use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use tauri::{App, AppHandle, Manager, Runtime, WebviewWindow};
 
 use crate::locale::Locale;
@@ -14,6 +14,9 @@ pub const MAIN_WINDOW: &str = "main";
 const ID_SHOW: &str = "show";
 const ID_QUIT: &str = "quit";
 
+/// Kept around so the menu can be rebuilt when the language changes.
+struct TrayHandle(TrayIcon);
+
 fn menu<R: Runtime, M: Manager<R>>(manager: &M, locale: Locale) -> tauri::Result<Menu<R>> {
     let show = MenuItem::with_id(manager, ID_SHOW, locale.tray_show(), true, None::<&str>)?;
     let quit = MenuItem::with_id(manager, ID_QUIT, locale.tray_quit(), true, None::<&str>)?;
@@ -23,7 +26,7 @@ fn menu<R: Runtime, M: Manager<R>>(manager: &M, locale: Locale) -> tauri::Result
 pub fn setup(app: &App) -> tauri::Result<()> {
     let locale = app.state::<Arc<AppState>>().config().language.resolve();
 
-    TrayIconBuilder::new()
+    let tray = TrayIconBuilder::new()
         .icon(app.default_window_icon().cloned().ok_or_else(|| {
             tauri::Error::AssetNotFound("the default window icon is missing".into())
         })?)
@@ -47,7 +50,20 @@ pub fn setup(app: &App) -> tauri::Result<()> {
         })
         .build(app)?;
 
+    app.manage(TrayHandle(tray));
     Ok(())
+}
+
+/// Redraws the tray menu in another language.
+pub fn relocalize(app: &AppHandle, locale: Locale) {
+    let Some(handle) = app.try_state::<TrayHandle>() else {
+        return;
+    };
+
+    match menu(app, locale).and_then(|menu| handle.0.set_menu(Some(menu))) {
+        Ok(()) => tracing::debug!(?locale, "tray menu redrawn"),
+        Err(err) => tracing::error!(?err, "could not update the tray menu"),
+    }
 }
 
 fn main_window(app: &AppHandle) -> Option<WebviewWindow> {

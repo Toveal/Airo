@@ -5,29 +5,28 @@
         <h2>{{ monitor.label }}</h2>
         <span class="monitor-meta">
           {{ monitor.deviceName }} · {{ monitor.width }} × {{ monitor.height }}
-          <template v-if="monitor.isPrimary"> · primary</template>
+          <template v-if="monitor.isPrimary"> · {{ t('monitors.primary') }}</template>
         </span>
       </div>
 
-      <label class="toggle" :title="profile.enabled
-        ? 'Turn off — this monitor keeps the system colours'
-        : 'Turn on colour switching for this monitor'">
+      <label class="toggle"
+        :title="profile.enabled ? t('monitors.disableHint') : t('monitors.enableHint')">
         <input type="checkbox" :checked="profile.enabled"
           @change="$emit('update:enabled', $event.target.checked)" />
         <span class="toggle-track"><span class="toggle-thumb" /></span>
-        <span class="toggle-label">{{ profile.enabled ? 'Enabled' : 'Disabled' }}</span>
+        <span class="toggle-label">{{ profile.enabled ? t('monitors.enabled') : t('monitors.disabled') }}</span>
       </label>
     </div>
 
     <div class="layout" :class="{ dimmed: !profile.enabled }">
       <div class="fields">
-        <ColorField :model-value="profile.highlight" title="Selection outline"
-          hint="COLOR_HIGHLIGHT — the line around the rectangle you drag with the mouse"
+        <ColorField :model-value="profile.highlight" :title="t('colors.outline')"
+          :hint="t('colors.outlineHint')"
           @update:channel="(ch, v) => $emit('update:channel', 'highlight', ch, v)"
           @update:color="(rgb) => $emit('update:color', 'highlight', rgb)" />
 
-        <ColorField :model-value="profile.hotlight" title="Selection fill"
-          hint="COLOR_HOTLIGHT — the translucent fill inside that rectangle"
+        <ColorField :model-value="profile.hotlight" :title="t('colors.fill')"
+          :hint="t('colors.fillHint')"
           @update:channel="(ch, v) => $emit('update:channel', 'hotlight', ch, v)"
           @update:color="(rgb) => $emit('update:color', 'hotlight', rgb)" />
       </div>
@@ -40,8 +39,11 @@
 </template>
 
 <script setup>
+import { useI18n } from 'vue-i18n';
 import ColorField from './ColorField.vue';
 import ColorPreview from './ColorPreview.vue';
+
+const { t } = useI18n();
 
 defineProps({
   monitor: { type: Object, required: true },
