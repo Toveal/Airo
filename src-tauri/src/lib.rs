@@ -112,8 +112,11 @@ fn setup(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
 
     tray::setup(app)?;
 
-    if start_hidden && let Some(window) = app.get_webview_window(tray::MAIN_WINDOW) {
-        let _ = window.hide();
+    // The window is created hidden (`"visible": false` in tauri.conf.json).
+    // Creating it visible and hiding it here instead is what made it flash on
+    // screen before "start minimized" could take effect.
+    if !start_hidden && let Some(window) = app.get_webview_window(tray::MAIN_WINDOW) {
+        let _ = window.show();
     }
 
     Ok(())
