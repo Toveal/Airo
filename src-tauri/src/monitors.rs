@@ -86,14 +86,15 @@ pub fn enumerate() -> MonitorSnapshot {
             let id = device_path
                 .as_deref()
                 .map_or_else(|| fnv1a_hex(&m.device_name), fnv1a_hex);
-            let label = descriptor
+            let panel = descriptor
                 .and_then(|d| d.friendly_name.clone())
                 .unwrap_or_else(|| m.device_name.clone());
+            let number = index as u32 + 1;
 
             MonitorInfo {
                 id,
-                index: index as u32 + 1,
-                label,
+                index: number,
+                label: display_name(&panel, number),
                 device_path,
                 x: m.rect.left,
                 y: m.rect.top,
@@ -106,35 +107,20 @@ pub fn enumerate() -> MonitorSnapshot {
         })
         .collect();
 
-    MonitorSnapshot {
-        monitors: disambiguate_labels(monitors),
-    }
+    MonitorSnapshot { monitors }
 }
 
-/// Appends a number to duplicate names.
+/// The name shown in the UI: the panel plus its position number.
 ///
-/// Two panels of the same model report the same
-/// `monitorFriendlyDeviceName`, which makes them indistinguishable in the list
-/// — yet the user has to pick a specific one.
-fn disambiguate_labels(mut monitors: Vec<MonitorInfo>) -> Vec<MonitorInfo> {
-    let mut counts: HashMap<&str, usize> = HashMap::new();
-    for monitor in &monitors {
-        *counts.entry(monitor.label.as_str()).or_default() += 1;
-    }
-
-    let duplicates: Vec<String> = counts
-        .into_iter()
-        .filter(|&(_, count)| count > 1)
-        .map(|(label, _)| label.to_owned())
-        .collect();
-
-    for monitor in &mut monitors {
-        if duplicates.contains(&monitor.label) {
-            monitor.label = format!("{} #{}", monitor.label, monitor.index);
-        }
-    }
-
-    monitors
+/// The number is always present, not only when two names collide. Panels of the
+/// same model report the same `monitorFriendlyDeviceName`, and a number that
+/// appears and disappears depending on what else is plugged in is worse than no
+/// number at all — the user cannot learn which screen is which.
+///
+/// Numbering follows this app's own ordering (primary first, then left to right)
+/// and need not match the numbers in Windows display settings.
+fn display_name(panel: &str, number: u32) -> String {
+    format!("{panel} #{number}")
 }
 
 // --- EnumDisplayMonitors -----------------------------------------------------
@@ -395,17 +381,18 @@ mod tests {
     }
 
     #[test]
-    fn identical_labels_get_numbered() {
-        let labels: Vec<String> = disambiguate_labels(vec![
-            monitor("a", 1, "LS24C43xG"),
-            monitor("b", 2, "LS24C43xG"),
-            monitor("c", 3, "DELL U2720Q"),
-        ])
-        .into_iter()
-        .map(|m| m.label)
-        .collect();
+    fn every_monitor_is_numbered() {
+        assert_eq!(display_name("DELL U2720Q", 1), "DELL U2720Q #1");
+        assert_eq!(display_name("DELL U2720Q", 3), "DELL U2720Q #3");
+    }
 
-        assert_eq!(labels, ["LS24C43xG #1", "LS24C43xG #2", "DELL U2720Q"]);
+    #[test]
+    fn identical_panels_stay_distinguishable() {
+        assert_ne!(
+            display_name("LS24C43xG", 1),
+            display_name("LS24C43xG", 2),
+            "two panels of the same model must not share a name"
+        );
     }
 
     #[test]
