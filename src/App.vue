@@ -56,6 +56,8 @@
           </button>
         </div>
       </div>
+
+      <UpdateBanner />
     </div>
   </div>
 </template>
@@ -67,11 +69,14 @@ import TitleBar from './components/TitleBar.vue';
 import MonitorTabs from './components/MonitorTabs.vue';
 import MonitorSettings from './components/MonitorSettings.vue';
 import SettingsPanel from './components/SettingsPanel.vue';
+import UpdateBanner from './components/UpdateBanner.vue';
 import { useTheme } from './composables/useTheme.js';
 import { useAiro } from './composables/useAiro.js';
+import { useUpdater } from './composables/useUpdater.js';
 
 const { t } = useI18n();
 const { theme, toggleTheme } = useTheme();
+const { checkForUpdates } = useUpdater();
 
 const {
   monitors,
@@ -116,7 +121,12 @@ const statusText = computed(() => {
   }
 });
 
-onMounted(init);
+onMounted(() => {
+  init();
+  // Fire-and-forget: an update check must never hold up the UI, and its own
+  // error handling keeps a failed check silent.
+  checkForUpdates();
+});
 </script>
 
 <style scoped>

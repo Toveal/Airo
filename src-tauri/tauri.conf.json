@@ -25,8 +25,20 @@
       "csp": null
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc4MEMzMzRGMkI4ODg2NTIKUldSU2hvZ3JUek1NZUdsUjZQN3NBMitFNktmY1RGaTVuOHBHNjQ2aFd2TWZUK0NNUkkrZCtuM04K",
+      "endpoints": [
+        "https://github.com/Toveal/airo/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": [
       "nsis"
     ],

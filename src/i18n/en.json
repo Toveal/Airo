@@ -65,5 +65,13 @@
       "hint": "Applies to the window and the tray menu",
       "system": "System"
     }
+  },
+  "update": {
+    "available": "Update {version} is available",
+    "download": "Download and install",
+    "later": "Later",
+    "downloading": "Downloading… {percent}%",
+    "installing": "Installing, the app will restart…",
+    "error": "Could not install the update"
   }
 }
