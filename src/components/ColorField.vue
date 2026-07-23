@@ -3,7 +3,7 @@
     <div class="field-header">
       <div class="field-title">
         <span class="field-name">{{ title }}</span>
-        <span class="field-hint">{{ hint }}</span>
+        <span v-if="hint" class="field-hint">{{ hint }}</span>
       </div>
 
       <div class="field-inputs">

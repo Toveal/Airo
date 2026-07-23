@@ -21,12 +21,10 @@
     <div class="layout" :class="{ dimmed: !profile.enabled }">
       <div class="fields">
         <ColorField :model-value="profile.highlight" :title="t('colors.outline')"
-          :hint="t('colors.outlineHint')"
           @update:channel="(ch, v) => $emit('update:channel', 'highlight', ch, v)"
           @update:color="(rgb) => $emit('update:color', 'highlight', rgb)" />
 
         <ColorField :model-value="profile.hotlight" :title="t('colors.fill')"
-          :hint="t('colors.fillHint')"
           @update:channel="(ch, v) => $emit('update:channel', 'hotlight', ch, v)"
           @update:color="(rgb) => $emit('update:color', 'hotlight', rgb)" />
       </div>

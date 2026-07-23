@@ -36,9 +36,7 @@
   },
   "colors": {
     "outline": "Selection outline",
-    "outlineHint": "COLOR_HIGHLIGHT — the line around the rectangle you drag with the mouse",
-    "fill": "Selection fill",
-    "fillHint": "COLOR_HOTLIGHT — the translucent fill inside that rectangle"
+    "fill": "Selection fill"
   },
   "preview": {
     "title": "What it will look like",
