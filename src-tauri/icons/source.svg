@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Airo — Inset Frames. Two overlapping selection frames: indigo (front)
+       over amber (back). Filled cards with a thin inset frame that reads as a
+       selection outline at large sizes and collapses to a solid block in the
+       tray. Transparent background: one asset for app window, installer and tray.
+       Enlarged to ~88% of the canvas so the mark reads big at small sizes. -->
+
+  <!-- back card: amber -->
+  <rect x="368" y="337" width="596" height="596" rx="140" fill="#f5a524" stroke="rgba(18,20,28,0.16)" stroke-width="10"/>
+  <rect x="435" y="404" width="462" height="462" rx="84" fill="none" stroke="#d98713" stroke-width="42"/>
+
+  <!-- front card: indigo -->
+  <rect x="60" y="91" width="596" height="596" rx="140" fill="#4a6cf7" stroke="rgba(18,20,28,0.16)" stroke-width="10"/>
+  <rect x="127" y="158" width="462" height="462" rx="84" fill="none" stroke="#3b5ce6" stroke-width="42"/>
+</svg>
