@@ -4,8 +4,10 @@
 
 # Airo
 
-**Per-monitor selection colors for Windows.**
+**Windows selection colors that follow your cursor between monitors.**
 Give every display its own highlight color — Airo switches it automatically as your cursor moves between screens.
+
+**v0.1.0 · Early release** — feedback and bug reports are welcome.
 
 English · [Русский](README.ru.md)
 
@@ -17,18 +19,11 @@ English · [Русский](README.ru.md)
 
 </div>
 
-<!--
-  DEMO. The <video> tag streams the committed MP4 from its raw URL on the `main`
-  branch — push docs/demo.mp4 there for it to resolve. If a viewer's setup ever
-  fails to show the player, the fallback link below still opens the clip.
-  Most reliable alternative: open this README in the github.com editor and drag
-  docs/demo.mp4 into it — GitHub inserts a user-attachments URL that always embeds.
--->
 <div align="center">
 
-<video src="https://github.com/Toveal/airo/raw/main/docs/demo.mp4" width="760" autoplay loop muted playsinline controls></video>
+<img src="docs/demo.gif" width="760" alt="Selection rectangle colors change as the cursor moves between monitors" />
 
-[▶ Watch the demo](https://github.com/Toveal/airo/raw/main/docs/demo.mp4)
+[▶ Watch the demo](docs/demo.mp4)
 
 <sub><i>Each monitor gets its own highlight color — Airo switches it as the cursor moves.</i></sub>
 
@@ -36,7 +31,9 @@ English · [Русский](README.ru.md)
 
 ## What it does
 
-Windows paints the selection rectangle — the box you drag across the desktop or in Explorer — with a single color on every display. Airo lets you set a **different color for each monitor** and applies it automatically the moment your cursor crosses onto another screen. It lives quietly in the system tray and starts with Windows.
+Windows paints the selection rectangle — the box you drag across the desktop or in Explorer — with a single color on every display. Airo lets you set a **different color for each monitor** and applies it when the cursor enters that screen or on the first click after switching. It lives in the system tray and supports optional autostart.
+
+Colors change **globally for your Windows session**, following the cursor or the first click, depending on your settings. Airo does not render independent colors simultaneously on different displays. You can also use it on a single monitor.
 
 ## Features
 
@@ -45,7 +42,7 @@ Windows paints the selection rectangle — the box you drag across the desktop o
 - 🌗 **Light & dark theme** — matches how you work
 - 🌐 **English & Русский** — window and tray menu both localized
 - 🚀 **Autostart & tray** — launches minimized, keeps out of the way
-- ⬇️ **Auto-update** — checks GitHub Releases and updates in one click
+- ⬇️ **Auto-update** — built-in support for signed updates from GitHub Releases
 - 🔒 **No admin required** — per-user install, no UAC prompt
 
 ## Screenshots
@@ -65,43 +62,50 @@ Windows paints the selection rectangle — the box you drag across the desktop o
 
 ## Installation
 
-1. Download **`Airo_x.y.z_x64-setup.exe`** from the [latest release](https://github.com/Toveal/airo/releases/latest).
+1. Download **`Airo_0.1.0_x64-setup.exe`** from the [latest release](https://github.com/Toveal/airo/releases/latest).
 2. Run it. The installer is **per-user** — it installs to `%LOCALAPPDATA%\Airo` with no administrator prompt.
 3. On first launch Windows SmartScreen may warn about an unknown publisher (the app isn't code-signed with a paid certificate). Click **More info → Run anyway**.
+
+Requires **Windows 10/11 x64** and Microsoft Edge WebView2 Runtime. Setup can download WebView2 if missing; that step needs internet access. Compatibility across Windows builds is still being verified.
 
 ## Usage
 
 1. Pick a monitor tab and set its **outline** and **fill** colors.
 2. Close the window — it tucks into the tray and keeps running.
-3. Move your cursor between displays; the selection color follows.
+3. Move your cursor between displays. By default, colors switch on the first click after entering another monitor; you can change this in Settings.
 
 Everything saves as you go. Open **Settings** to toggle autostart, start-minimized, change-on-click, and the interface language.
 
+To stop Airo and restore your original colors, choose **Quit** in the tray menu. Exit Airo before uninstalling it.
+
+## Known limitations
+
+- The main effect is the drag-selection rectangle on the desktop and in Explorer. Explorer’s selected-file styling is unchanged; classic Windows applications may also use the system colors Airo changes.
+- Windows controls the fill opacity. The in-app preview is approximate.
+- After a crash or forced termination, colors can remain changed until you relaunch Airo and quit normally.
+- Avoid running multiple copies or combining Airo with another tool that changes the same system colors.
+
 ## Updating
 
-Airo checks GitHub Releases on startup. When a newer version is available, a banner appears at the bottom of the window with **Download and install** — one click updates and restarts the app.
+Airo checks the GitHub Releases update feed on startup. A newer signed update can be installed from the in-app banner. Updating between two public versions has not yet been verified for this first release; you can always download the installer manually. An unavailable update feed does not prevent using the app.
 
 ## Build from source
 
-**Requirements:** [Rust](https://www.rust-lang.org/tools/install) (stable) · [Bun](https://bun.sh) · Windows 10/11
+**Requirements:** Visual Studio C++ Build Tools with Windows SDK · WebView2 Runtime · [Rust](https://www.rust-lang.org/tools/install) (stable, MSVC) · [Bun](https://bun.sh) 1.4.2 · Windows 10/11 x64
 
 ```bash
-bun install
+bun install --frozen-lockfile
 bun run tauri dev      # run in development
-bun run tauri build    # produce the installer
+bun run tauri build --config src-tauri/tauri.local.conf.json -- --locked
 ```
 
-> **Note.** A release build signs the updater artifact, so `tauri build` needs the updater signing key in the environment:
->
-> ```powershell
-> $env:TAURI_SIGNING_PRIVATE_KEY = "<your private key>"
-> $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = ""
-> bun run tauri build
-> ```
->
-> `bun run tauri dev` needs none of this.
+The local config builds a test installer without the maintainer’s updater signing key. For signed releases, use the default config and the private key matching the configured updater public key. See [the release guide](docs/RELEASING.md) for checks and the draft-release workflow. Updater signatures are separate from Windows publisher certificates.
 
 **Stack:** Rust · Tauri 2 · Vue 3 · Vite
+
+## Feedback
+
+[Report a bug or suggest an improvement](https://github.com/Toveal/airo/issues). Include your Airo version, Windows build (`winver`), monitor setup and reproduction steps. English and Russian are welcome.
 
 ## License
 
