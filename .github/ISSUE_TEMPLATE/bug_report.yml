@@ -1,0 +1,34 @@
+name: Bug report / Ошибка
+description: Report a problem with Airo / Сообщить об ошибке
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Airo version / Версия Airo
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version and build / Версия и сборка Windows
+      description: Run winver / Выполните winver
+    validations:
+      required: true
+  - type: textarea
+    id: displays
+    attributes:
+      label: Monitor setup / Мониторы
+      description: Number of displays, resolutions, scaling, docking station or remote session if relevant.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened? / Что произошло?
+      description: Steps to reproduce, expected result and actual result. English or Russian is welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots / Логи или скриншоты
+      description: Logs are in %LOCALAPPDATA%\com.airo.desktop\logs. Remove personal information before attaching.

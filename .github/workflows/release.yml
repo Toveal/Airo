@@ -1,0 +1,71 @@
+name: Draft release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: draft-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: '1.4.2'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+      - run: bun install --frozen-lockfile
+      - name: Check signing key is configured
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        shell: pwsh
+        run: |
+          if (-not $env:TAURI_SIGNING_PRIVATE_KEY) {
+            throw 'Set the TAURI_SIGNING_PRIVATE_KEY repository secret. See docs/RELEASING.md.'
+          }
+      - name: Check versions and load release notes
+        id: notes
+        shell: pwsh
+        run: |
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          $config = Get-Content src-tauri/tauri.conf.json -Raw | ConvertFrom-Json
+          $cargoVersion = (Select-String -Path src-tauri/Cargo.toml -Pattern '^version = "([^"]+)"' | Select-Object -First 1).Matches.Groups[1].Value
+          if ($package.version -ne $config.version -or $cargoVersion -ne $config.version) {
+            throw 'Versions in package.json, Cargo.toml and tauri.conf.json must match.'
+          }
+          $notes = Get-Content "docs/releases/$($config.version).md" -Raw
+          $delimiter = [guid]::NewGuid().ToString()
+          "body<<$delimiter" >> $env:GITHUB_OUTPUT
+          $notes >> $env:GITHUB_OUTPUT
+          $delimiter >> $env:GITHUB_OUTPUT
+      - run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
+      - run: bun run build
+      - run: cargo test --manifest-path src-tauri/Cargo.toml --locked
+      - run: cargo clippy --manifest-path src-tauri/Cargo.toml --locked --all-targets -- -D warnings
+      - name: Build and upload draft
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tauriScript: bun run tauri
+          args: --ci -- --locked
+          tagName: v__VERSION__
+          releaseName: Airo v__VERSION__ — Early release
+          releaseBody: ${{ steps.notes.outputs.body }}
+          releaseDraft: true
+          prerelease: false
+          uploadUpdaterJson: true
+          updaterJsonPreferNsis: true

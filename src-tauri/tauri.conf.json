@@ -27,7 +27,7 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc4MEMzMzRGMkI4ODg2NTIKUldSU2hvZ3JUek1NZUdsUjZQN3NBMitFNktmY1RGaTVuOHBHNjQ2aFd2TWZUK0NNUkkrZCtuM04K",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDg4REM0QjE3QzVFRkU3ODIKUldTQzUrL0ZGMHZjaUpRMk0vYmFMenpqZ0ttUEk3WEttYURtWUhzRjBQVnk5TS8rYzFlM2ZjdEIK",
       "endpoints": [
         "https://github.com/Toveal/airo/releases/latest/download/latest.json"
       ],
@@ -39,17 +39,12 @@
   "bundle": {
     "active": true,
     "createUpdaterArtifacts": true,
-    "targets": [
-      "nsis"
-    ],
+    "targets": ["nsis"],
     "windows": {
       "nsis": {
         "template": "nsis/installer.nsi",
         "installMode": "currentUser",
-        "languages": [
-          "English",
-          "Russian"
-        ],
+        "languages": ["English", "Russian"],
         "displayLanguageSelector": true
       }
     },
